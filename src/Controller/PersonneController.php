@@ -3,26 +3,16 @@
 namespace App\Controller;
 
 use App\Entity\Personne;
-use Doctrine\ORM\EntityManager;
+use App\Form\PersonneType;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class PersonneController extends AbstractController
 {
-//    #[Route('/personne', name: 'personne')]
-//    public function index(): Response
-//    {
-//        return $this->render('personne/index.html.twig', [
-//            'controller_name' => 'PersonneController',
-//        ]);
-//    }
-
-//    /**
-//     * @param EntityManagerInterface $repository
-//     * @return Response
-//     */
 
     /**
      * @param EntityManagerInterface $manager
@@ -35,6 +25,62 @@ class PersonneController extends AbstractController
 
         return $this->render('personne/index.html.twig', [
             'personnes' => $personne,
+        ]);
+    }
+
+
+    #[Route('personne/ajouter', name:'personne_ajouter')]
+    public function ajouter(Request $request, ManagerRegistry $doctrine):Response
+    {
+        //créer uen catégorie vide
+        $personne = new Personne();
+
+        $form = $this->createForm(PersonneType::class, $personne);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()){
+            //entity manager
+            $em=$doctrine->getRepository(Personne::class);
+
+            //dis a l'entity manager que je veux enregister ma catégorie
+            $em->persist($personne);//Trouver pourquoi il ne reconait pas ce persist mais reconnais celui du modifier
+
+
+
+            //je déclenche la requête
+            $em->flush();
+
+            //je retourne à l'accueil
+            return $this->redirectToRoute("home");
+        }
+
+        return $this->render('personne/ajouter.html.twig', [
+            "formulaire"=>$form->createView()
+        ]);
+    }
+
+    #[Route('personne/modifier/{id}', name:'personne_modifier')]
+    public function personne_modifier($id, Request $request, ManagerRegistry $doctrine){
+        $repo=$doctrine->getRepository(Personne::class);
+        $personne=$repo->find($id);
+
+        $form = $this->createForm(PersonneType::class, $personne);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()){
+
+            $em=$doctrine->getManager();
+
+
+            $em->persist($personne);
+
+            $em->flush();
+
+            return $this->redirectToRoute("home");
+        }
+
+        return $this->render("personne/modifier.html.twig", [
+            "formulaire"=>$form->createView()
         ]);
     }
 

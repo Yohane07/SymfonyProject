@@ -3,14 +3,28 @@
 {% block title %}Accueil {% endblock %}
 
 {% block body %}
-    {% for personne in personnes %}
-     <div class="container">
-         <div class="row">
-             <div class="col-md-3" style="background-color: floralwhite">{{ personne.id}}</div>
-             <div class="col-md-3" style="background-color: #5eb5e0">{{ personne.nom}}</div>
-             <div class="col-md-3"  style="background-color: burlywood">{{ personne.prenom }}</div>
-             <div class="col-md-3"  style="background-color: indianred">{{ personne.depense }}</div>
-         </div>
-     </div>
-  {% endfor %}
+
+<h1>Gestion des dépenses de la  soirée X</h1>
+
+<table class="table">
+    <tr>
+        <th>Nom</th>
+        <th>Prénom</th>
+        <th>Dépense</th>
+        <th></th>
+    </tr>
+    {% for p in personnes %}
+        <tr>
+            <td>{{ p.nom}}</td>
+            <td>{{ p.prenom }}</td>
+            <td>{{ p.depense }}</td>
+            <td><a href="{{ path("personne_modifier",{"id":p.id}) }}" class="btn btn-sm btn-warning">Modifier</a></td>
+        </tr>
+    {% endfor %}
+</table>
+
+
+<a href="{{ path("personne_ajouter") }}" class="btn btn-success">
+    Ajouter une catégorie
+</a>
 {% endblock %}
