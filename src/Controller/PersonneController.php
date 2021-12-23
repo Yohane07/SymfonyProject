@@ -30,7 +30,7 @@ class PersonneController extends AbstractController
 
 
     #[Route('personne/ajouter', name:'personne_ajouter')]
-    public function ajouter(Request $request, ManagerRegistry $doctrine):Response
+    public function ajouter(Request $request, ManagerRegistry $manager):Response
     {
         //créer uen catégorie vide
         $personne = new Personne();
@@ -40,7 +40,7 @@ class PersonneController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()){
             //entity manager
-            $em=$doctrine->getRepository(Personne::class);
+            $em=$manager->getManager();
 
             //dis a l'entity manager que je veux enregister ma catégorie
             $em->persist($personne);//Trouver pourquoi il ne reconait pas ce persist mais reconnais celui du modifier
